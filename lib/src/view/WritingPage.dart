@@ -64,6 +64,7 @@ class _WritingPageState extends State<WritingPage> {
                     FlatButton(
                       child: Text("Sim"),
                       onPressed: (){
+
                         if(widget.index == -1){
                           Provider.of<ListProvider>(context, listen: false).addNote(
                               _controllerTitle.text.isEmpty ? "Sem titulo" : _controllerTitle.text,
@@ -71,6 +72,7 @@ class _WritingPageState extends State<WritingPage> {
                           );
                         }
                         else{
+                          //NoteModel noteToRemove = Provider.of<ListProvider>(context, listen: false).notes[widget.index];
                           Provider.of<ListProvider>(context, listen: false).removeNote(widget.index);
                           Provider.of<ListProvider>(context, listen: false).insertNote(
                               NoteModel(title: _controllerTitle.text.isEmpty ? "Sem titulo" : _controllerTitle.text, body: _controllerBody.text), widget.index

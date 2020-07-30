@@ -93,18 +93,21 @@ class _HomeState extends State<Home> {
                     direction: DismissDirection.endToStart,
                     onDismissed: (direction){
                       var removedNote = list.notes[index];
-                      Provider.of<ListProvider>(context, listen: false).removeNote(index);
-
+                      var lastIndex = index;
+                      Provider.of<ListProvider>(this.context, listen: false).removeNote(index);
+                      print(lastIndex);
                       Scaffold.of(context).showSnackBar(
                           SnackBar(
                             content: Text("Nota removida"),
                             action: SnackBarAction(
                               label: "Desfazer",
                               onPressed: (){
-                                Provider.of<ListProvider>(context, listen: false).insertNote(removedNote, index);
+                                print(lastIndex);
+
+                                Provider.of<ListProvider>(this.context, listen: false).insertNote(removedNote, lastIndex);
                               },
                             ),
-                            duration: Duration(seconds: 4),
+                            duration: Duration(seconds: 3),
                           ),
                       );
                     },
