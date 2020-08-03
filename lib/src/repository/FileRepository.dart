@@ -14,7 +14,7 @@ class FileRepository {
   void saveToFile(List<NoteModel> notes) async {
     File archive = await getFilePath();
     var listToSend = notes.map((map) {
-      return map.toJson();
+      return map.toMap();
     }
     ).toList();
     archive.writeAsString(json.encode(listToSend));
@@ -26,7 +26,7 @@ class FileRepository {
       String dataJson = await archive.readAsString();
       List listTemp = json.decode(dataJson);
       List<NoteModel> listToGet = listTemp.map<NoteModel>((map) {
-        return NoteModel.fromJson(map);
+        return NoteModel.fromMap(map);
       }
       ).toList();
       return listToGet;

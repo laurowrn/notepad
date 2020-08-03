@@ -5,9 +5,9 @@ import 'package:notepad/src/provider/ListProvider.dart';
 import 'package:provider/provider.dart';
 
 class WritingPage extends StatefulWidget {
-  int index;
+  int id;
 
-  WritingPage({this.index = -1});
+  WritingPage({this.id = -1});
 
   @override
   _WritingPageState createState() => _WritingPageState();
@@ -16,20 +16,16 @@ class WritingPage extends StatefulWidget {
 class _WritingPageState extends State<WritingPage> {
   TextEditingController _controllerTitle = TextEditingController();
   TextEditingController _controllerBody = TextEditingController();
-  WritingPageBloc _writingPageBloc = WritingPageBloc();
 
   @override
-  void initState() {
-    /*_writingPageBloc.validatePage(
-        _controllerTitle.text,
-        _controllerBody.text,
-        widget.index,
-        context
-    );*/
-
-    if(widget.index != -1){
-      _controllerTitle.text = Provider.of<ListProvider>(context, listen: false).notes[widget.index].title;
-      _controllerBody.text = Provider.of<ListProvider>(context, listen: false).notes[widget.index].body;
+  void initState(){
+    if(widget.id != -1){
+      Provider.of<ListProvider>(context, listen: false).getNote(widget.id).then(
+              (value) {
+                _controllerTitle.text = value.title;
+                _controllerBody.text = value.body;
+              }
+      );
     }
     print(_controllerTitle.text);
 
@@ -52,7 +48,7 @@ class _WritingPageState extends State<WritingPage> {
               context: context,
               builder: (context){
                 return AlertDialog(
-                  title: widget.index == -1 ? Text("Deseja salvar a anotação?") : Text("Deseja salvar as alterações?"),
+                  title: widget.id == -1 ? Text("Deseja salvar a anotação?") : Text("Deseja salvar as alterações?"),
                   actions: <Widget>[
                     FlatButton(
                       child: Text("Não"),
@@ -65,17 +61,19 @@ class _WritingPageState extends State<WritingPage> {
                       child: Text("Sim"),
                       onPressed: (){
 
-                        if(widget.index == -1){
+                        if(widget.id == -1){
                           Provider.of<ListProvider>(context, listen: false).addNote(
                               _controllerTitle.text.isEmpty ? "Sem titulo" : _controllerTitle.text,
                               _controllerBody.text
                           );
                         }
                         else{
-                          //NoteModel noteToRemove = Provider.of<ListProvider>(context, listen: false).notes[widget.index];
-                          Provider.of<ListProvider>(context, listen: false).removeNote(widget.index);
-                          Provider.of<ListProvider>(context, listen: false).insertNote(
-                              NoteModel(title: _controllerTitle.text.isEmpty ? "Sem titulo" : _controllerTitle.text, body: _controllerBody.text), widget.index
+                          Provider.of<ListProvider>(context, listen: false).updateNote(
+                              NoteModel(title: _controllerTitle.text.isEmpty ? "Sem titulo" :
+                                  _controllerTitle.text,
+                                  body: _controllerBody.text,
+                                  id: widget.id
+                              )
                           );
                         }
                         Navigator.pop(context);

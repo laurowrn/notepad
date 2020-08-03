@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:notepad/src/model/NoteModel.dart';
 import 'package:notepad/src/provider/ListProvider.dart';
+import 'package:notepad/src/repository/DatabaseRepository.dart';
 import 'package:notepad/src/view/WritingPage.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -10,8 +12,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
-
   @override
   void initState() {
     super.initState();
@@ -93,18 +93,18 @@ class _HomeState extends State<Home> {
                     direction: DismissDirection.endToStart,
                     onDismissed: (direction){
                       var removedNote = list.notes[index];
-                      var lastIndex = index;
-                      Provider.of<ListProvider>(this.context, listen: false).removeNote(index);
-                      print(lastIndex);
+                      Provider.of<ListProvider>(this.context, listen: false).removeNote(list.notes[index].id);
                       Scaffold.of(context).showSnackBar(
                           SnackBar(
                             content: Text("Nota removida"),
                             action: SnackBarAction(
                               label: "Desfazer",
                               onPressed: (){
-                                print(lastIndex);
-
-                                Provider.of<ListProvider>(this.context, listen: false).insertNote(removedNote, lastIndex);
+                                Provider.of<ListProvider>(this.context, listen: false).addNote(
+                                    removedNote.title,
+                                    removedNote.body,
+                                    id: removedNote.id
+                                );
                               },
                             ),
                             duration: Duration(seconds: 3),
@@ -119,7 +119,7 @@ class _HomeState extends State<Home> {
                         height: 90,
                         child: GestureDetector(
                           onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => WritingPage(index: index)));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => WritingPage(id: list.notes[index].id)));
                           },
                           child: Card(
                               shape: RoundedRectangleBorder(
